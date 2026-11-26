@@ -14,7 +14,9 @@ def check_selection(page, base, program, country, check_exports=False):
         """([program,country]) => document.querySelector('#result').getAttribute('aria-busy') === 'false' &&
         document.querySelector('#retry').hidden && document.querySelector('#csv').href.endsWith('/'+program+'/'+country+'.csv')""",
         arg=[program, country])
-    assert name in page.locator('h1').inner_text()
+    # The established U.S. landing title uses the short form of IRCC's country name.
+    heading_name = 'United States' if country == 'US' else name
+    assert heading_name in page.locator('h1').inner_text()
     assert page.locator('h1').inner_text() in page.title()
     assert name in page.locator('#lead').inner_text()
     assert name in page.locator('#context').inner_text()

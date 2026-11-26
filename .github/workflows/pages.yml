@@ -49,7 +49,11 @@ jobs:
       - name: Install browser test dependencies
         run: |
           python3 -m pip install -r tests/browser-requirements.txt
-          python3 -m playwright install --with-deps chromium
+          if command -v google-chrome >/dev/null; then
+            echo "CHROME_BIN=$(command -v google-chrome)" >> "$GITHUB_ENV"
+          else
+            python3 -m playwright install --with-deps chromium
+          fi
       - name: Check application in a browser
         run: python3 tests/browser_smoke.py
       - name: Save browser screenshots
@@ -117,6 +121,10 @@ jobs:
       - name: Install browser test dependencies
         run: |
           python3 -m pip install -r tests/browser-requirements.txt
-          python3 -m playwright install --with-deps chromium
+          if command -v google-chrome >/dev/null; then
+            echo "CHROME_BIN=$(command -v google-chrome)" >> "$GITHUB_ENV"
+          else
+            python3 -m playwright install --with-deps chromium
+          fi
       - name: Verify location changes on the published India landing page
         run: python3 tests/selection_browser.py
