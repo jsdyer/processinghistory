@@ -22,7 +22,7 @@ def check_selection(page, base, program, country, check_exports=False):
     assert name in page.locator('#context').inner_text()
     assert name in page.locator('#history-title').inner_text()
     assert name in page.locator('meta[name="description"]').get_attribute('content')
-    assert name in page.locator('meta[property="og:title"]').get_attribute('content')
+    assert page.locator('meta[property="og:title"]').get_attribute('content') == page.title()
     assert page.locator('#records tr').count() == 12
     if check_exports:
         expected_path = f'{base}series/{program}/{country}'
