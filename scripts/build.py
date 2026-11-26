@@ -8,7 +8,7 @@ import shutil
 import tempfile
 from urllib.parse import urlsplit
 
-from search_metadata import add_search_metadata
+from views import render_views
 
 ROOT = Path(__file__).resolve().parents[1]
 SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
@@ -75,8 +75,7 @@ def build(root=ROOT):
             page = page.replace(placeholder, markup if on_coolcode else "")
         if re.search(r"\{\{[A-Z_]+\}\}", page):
             raise ValueError("Unresolved template placeholder in web/index.html")
-        page = add_search_metadata(page, tool)
-        index.write_text(page, encoding="utf-8")
+        render_views(stage, page, tool)
         (stage / ".nojekyll").touch()
         if output.exists():
             shutil.rmtree(output)

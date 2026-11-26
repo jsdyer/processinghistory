@@ -1,16 +1,23 @@
 {
-  "id": "coolcode-tool-template",
-  "title": "CoolCode Tool Starter",
-  "description": "A browser-only example that trims lines and removes exact duplicates.",
-  "category": "security",
-  "tags": ["text", "lines", "duplicates"],
-  "icon": "scan-search",
-  "url": "/coolcode-tool-template/",
-  "source": "https://github.com/jsdyer/coolcode-tool-template",
+  "id": "processinghistory",
+  "title": "IRCC Processing Time History",
+  "description": "Compare published Canadian visa and permit processing times by application type, country and observation date.",
+  "category": "explorers",
+  "tags": [
+    "Canada",
+    "IRCC",
+    "visas",
+    "immigration",
+    "processing times"
+  ],
+  "icon": "calendar-days",
+  "url": "/processinghistory/",
+  "source": "https://github.com/jsdyer/processinghistory",
   "hosting": "project",
   "access": "browser",
   "data_info": {
-    "mode": "local",
-    "detail": "The browser reads the text you paste and compares its lines."
+    "mode": "snapshot",
+    "detail": "IRCC country-based processing estimates with dated independent archive captures and direct observations.",
+    "cadence": "Daily"
   }
 }
