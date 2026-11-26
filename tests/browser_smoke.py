@@ -7,6 +7,7 @@ import shutil
 import tempfile
 import threading
 from playwright.sync_api import sync_playwright
+from selection_browser import verify
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -44,6 +45,7 @@ def main():
                 page.set_viewport_size({"width": 390, "height": 844})
                 assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
                 page.screenshot(path=str(screenshots / "mobile.png"), full_page=True)
+                verify(page, f"http://127.0.0.1:{server.server_port}/example-tool/")
                 assert not errors, errors
                 browser.close()
             print("Browser checks passed for root, preset and mobile layout")

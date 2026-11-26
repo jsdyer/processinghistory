@@ -98,3 +98,25 @@ jobs:
     steps:
       - uses: actions/deploy-pages@v5
         id: publish
+
+  published-selection:
+    # Daily data refreshes already exercise this path against the built artifact.
+    if: github.event_name == 'push'
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install browser test dependencies
+        run: |
+          python3 -m pip install -r tests/browser-requirements.txt
+          python3 -m playwright install --with-deps chromium
+      - name: Verify location changes on the published India landing page
+        run: python3 tests/selection_browser.py
