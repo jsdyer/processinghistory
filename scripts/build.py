@@ -17,8 +17,10 @@ SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 def metadata(root=ROOT):
     tool = json.loads((root / "tool.json").read_text(encoding="utf-8"))
     required = {"id", "title", "description", "category", "tags", "icon", "url", "source", "hosting", "access", "data_info"}
-    if not isinstance(tool, dict) or set(tool) != required:
+    if not isinstance(tool, dict) or set(tool) != required | {"result_directory"}:
         raise ValueError("tool.json has missing or unknown fields")
+    if tool["result_directory"].get("path") != "records/" or not tool["result_directory"].get("title"):
+        raise ValueError("Describe the country profile directory in tool.json")
     for key in required - {"tags", "data_info"}:
         if not isinstance(tool[key], str) or not tool[key].strip():
             raise ValueError(f"tool.json: {key} must be a nonempty string")

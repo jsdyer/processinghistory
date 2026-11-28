@@ -8,6 +8,7 @@ from pathlib import Path
 from urllib.parse import urlencode
 import xml.etree.ElementTree as ET
 from search_metadata import add_search_metadata
+from country_guides import build_country, directory
 from collect import OFFICIAL,PROGRAMS,read_json,write_json
 
 def option(k,v,selected):
@@ -53,7 +54,9 @@ def render_views(stage,template,tool):
     used=sorted(set.union(*(set(s['countries']) for s in snapshots)))
     for s in snapshots:
         s['positions']={c:i for i,c in enumerate(s['countries'])}
+    profiles = []
     for code in used:
+        country_rows = {}
         compact={}
         for program in PROGRAMS:
             rows=[]
@@ -65,10 +68,16 @@ def render_views(stage,template,tool):
                 values.append(value)
                 rows.append({'label':value,'issued':p['issued'][program],'observed':p['observed'],'evidence':p['evidence'],'hash':p['hash']})
             compact[program]=values
+            country_rows[program] = rows
             export_series(stage,tool,program,code,countries.get(code,code),rows)
             if any(e['program']==program and e['country']==code for e in examples):
                 catalog[program][code]=rows
         write_json(stage/'series'/(code+'.json'),compact)
+        profile = build_country(stage, tool, code, countries.get(code, code), country_rows, index['checkedAt'])
+        if profile:
+            profiles.append(profile)
+    directory(stage, tool, profiles, index['checkedAt'])
+    profile_codes = {p['code'] for p in profiles}
     for slug,e in [('',examples[0]),*[(e['slug'],e) for e in examples]]:
         base='../' if slug else './';folder=stage/slug;folder.mkdir(exist_ok=True)
         program,code=e['program'],e['country'];rows=catalog[program][code];latest=rows[-1]
@@ -81,5 +90,8 @@ def render_views(stage,template,tool):
         program_options=''.join(option(k,v,k==program) for k,v in PROGRAMS.items())
         top=''.join(f'<tr><td>{r["observed"][:10]}</td><td>{escape(r["issued"] or "Unavailable")}</td><td>{escape(describe(r))}</td><td><a href="{escape(r["evidence"],quote=True)}">Source</a></td></tr>' for r in reversed(rows[-6:]))
         fields={'APP_TITLE':escape(tool['title'],quote=True),'APP_DESCRIPTION':escape(tool['description'],quote=True),'START_PROGRAM':program,'START_COUNTRY':code,'COUNTRY_OPTIONS':country_options,'PROGRAM_OPTIONS':program_options,'HEADLINE':escape(describe(latest)),'ASOF':escape(latest['issued'] or 'date unavailable'),'CONTEXT':escape(PROGRAMS[program]+' · '+countries[code]),'INITIAL_ROWS':top,'FIRST_DATE':provenance[0]['observed'][:10],'OBSERVATIONS':str(index['captureCount']),'CHECKED':escape(index['checkedAt']),'CSV_PATH':base+'series/'+program+'/'+code+'.csv','RSS_PATH':base+'series/'+program+'/'+code+'.rss','PRESET_LINKS':''.join(f'<a data-program="{escape(example["program"],quote=True)}" data-country="{escape(example["country"],quote=True)}" href="{base}{example["slug"]}/">{escape(example["title"])}</a>' for example in examples)}
+        fields['PROFILE_CODES'] = ' '.join(sorted(profile_codes))
+        fields['PROFILE_PATH'] = base + ('records/' + code.lower() + '/' if code in profile_codes else 'records/')
+        fields['PROFILE_LABEL'] = escape('Compare all four application types for ' + countries[code] if code in profile_codes else 'Browse country comparisons')
         for token,value in fields.items():p=p.replace(token,value)
         (folder/'index.html').write_text(add_search_metadata(p,view))

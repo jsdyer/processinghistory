@@ -19,5 +19,9 @@
     "mode": "snapshot",
     "detail": "IRCC country-based processing estimates with dated independent archive captures and direct observations.",
     "cadence": "Daily"
+  },
+  "result_directory": {
+    "path": "records/",
+    "title": "IRCC visa and permit processing time histories by country of application"
   }
 }

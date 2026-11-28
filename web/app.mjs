@@ -1,6 +1,16 @@
 import {observations} from './model.mjs';
 const $=id=>document.getElementById(id), base=new URL('.',import.meta.url);
 async function read(path){const r=await fetch(new URL(path,base));if(!r.ok)throw new Error('Could not load this history.');return r.json();}
+const profileCodes = new Set($('main').dataset.countryProfiles.split(' '));
+$('all-profiles').href = new URL('records/', base);
+function showCountryProfile(country) {
+  const a = $('country-profile');
+  a.hidden = !profileCodes.has(country);
+  if (!a.hidden) {
+    a.href = new URL('records/' + country.toLowerCase() + '/', base);
+    a.textContent = 'Compare all four application types for ' + $('country').selectedOptions[0].text;
+  }
+}
 const cache = new Map();
 function historyData(path) {
   if (!cache.has(path)) {
@@ -93,6 +103,7 @@ async function change(pushAddress = false) {
     !['program','country'].some(key => new URLSearchParams(location.search).has(key));
   const view = describeSelection(program, country, rootLanding);
   renderHeading(view);
+  showCountryProfile(country);
   $('share').href = view.share;
   if (pushAddress && location.href !== view.share.href) history.pushState(null, '', view.share);
   const path = 'series/' + program + '/' + country;

@@ -46,6 +46,19 @@ def main():
                 assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
                 page.screenshot(path=str(screenshots / "mobile.png"), full_page=True)
                 verify(page, f"http://127.0.0.1:{server.server_port}/example-tool/")
+                assert page.locator('#country-profile').get_attribute('href').endswith('/records/in/')
+                page.locator('#country-profile').click()
+                assert 'India' in page.locator('h1').inner_text()
+                assert page.locator('.profile-summary li').count() == 4
+                assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
+                page.locator('#study').get_by_role('link',name='Explore the full study permit timeline').click()
+                assert page.locator('#program').input_value() == 'study' and page.locator('#country').input_value() == 'IN'
+                static = browser.new_page(java_script_enabled=False, viewport={'width': 320, 'height': 640})
+                static.goto(f"http://127.0.0.1:{server.server_port}/example-tool/records/")
+                static.get_by_role('link', name='India', exact=True).click()
+                assert static.locator('.profile-estimate').count() == 4
+                assert static.evaluate("document.documentElement.scrollWidth <= innerWidth")
+                static.close()
                 assert not errors, errors
                 browser.close()
             print("Browser checks passed for root, preset and mobile layout")

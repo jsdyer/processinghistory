@@ -3,7 +3,7 @@
 [Explore published estimates](https://coolcode.ca/processinghistory/) for visitor visas, super visas, study permits and work permits by country.
 
 <!-- coolcode:guide -->
-Choose the country applying from and one of four IRCC country-based programs. The first result shows the latest retained value and IRCC source edition. Review earlier observations with source links, download the selected history as CSV, or subscribe to its RSS change feed. A point is an observed estimate, never an individual completion date.
+Choose the country applying from and one of four IRCC country-based programs. The first result shows the latest retained value and IRCC source edition. Open the country comparison to see all four application types together, with dated changes from a prior edition around four weeks earlier. Review earlier observations with source links, download the selected history as CSV, or subscribe to its RSS change feed. A point is an observed estimate, never an individual completion date.
 <!-- /coolcode:guide -->
 
 ## Sources and coverage
@@ -13,6 +13,8 @@ IRCC's [processing-time form](https://www.canada.ca/en/immigration-refugees-citi
 The collector runs daily at 13:43 UTC. Last-good data stays published if validation or build fails. Identical data need no additional snapshot. `web/data/index.json` gives collection time, edition, number of retained captures and series count; `web/data/history/YYYY-MM.json` contains normalized captures with exact source strings in each snapshot's dictionary. The latest direct capture links to the mutable upstream URL; see its SHA-256 in the CSV and the retained version in this repository.
 
 Older observations come from two sources: original files from the [Wayback CDX](https://web.archive.org/cdx/search/cdx?url=www.canada.ca/content/dam/ircc/documents/json/data-ptime-en.json&output=json&filter=statuscode:200&collapse=digest) index and the independently preserved [IRCC JSON copies](https://github.com/suhaibmujahid/cic-processing-times/blob/main/.github/workflows/flat.yml) that link to individual commits. For the latter, the collector commit time serves as the observed time. These points are distinct from CoolCode’s own direct fetches. Missing observations are never inferred.
+
+The [country directory](https://coolcode.ca/processinghistory/records/) is rebuilt from the same validated history as the interactive timelines. A country qualifies after two programs each have numbered estimates in at least two dated editions. The result sitemap and directory feature countries with at least two numbered estimates in the latest capture. A later gap retains the country page at its stable country-code URL. The comparison window is 28–42 days before the latest IRCC edition. Missing estimates and observations stay visible. The [India comparison](https://coolcode.ca/processinghistory/records/in/) links to each program’s complete evidence table, chart and CSV.
 
 ## Expand or customize
 
